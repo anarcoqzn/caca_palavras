@@ -1,4 +1,4 @@
-import System.Random (randomRIO)
+--import System.Random(randomRIO)
 
 main = do 
         putStrLn " "
@@ -11,8 +11,7 @@ main = do
         putStrLn "   4 - O jogo será finalizado quando todas as palavras forem encontradas."
         putStrLn " "
         putStrLn "Digite a quantidade de palavras que serão escondidas:"
-        x <- getLine
-        let qnt_palavras = read x :: Int
+        qnt_palavras <- readLn
         valida_n(qnt_palavras)
         
         --input <- getLine
@@ -20,9 +19,9 @@ main = do
 	    --imprimeMatriz(caca_palavra)
         --x <- randomRIO (0,9::Int)
         --y <- randomRIO (0,9::Int)
-        --putStrLn (show x ++ " e " ++ show y)
+        imprimeMatriz(embaralha_letras(["","","","","agua","","","","",""]))
         
-caca_palavra = ["","","","","","","","","",""]
+--caca_palavra = ["","","","","dfgaguadfg","","","","",""]
 
 valida_n :: Int -> IO()
 valida_n n
@@ -38,8 +37,21 @@ valida_n n
                valida_n(qnt_palavras)
     | otherwise = putStrLn ""
 
---imprimeMatriz :: [String] -> IO()
---imprimeMatriz [] = putStrLn""
---imprimeMatriz (m:ms) = do
-	--putStrLn m
-	--imprimeMatriz(ms)
+imprimeMatriz :: [String] -> IO()
+imprimeMatriz [] = putStrLn""
+imprimeMatriz (m:ms) = do
+	putStrLn m
+	imprimeMatriz(ms)
+	
+embaralha_letras :: [String] -> [String]
+embaralha_letras [] = []
+embaralha_letras (palavra:ms) 
+	| length(palavra) == 10 = [palavra] ++ embaralha_letras(ms)
+	| otherwise = do
+					let indice = 13 -- randomico
+					if(indice `mod` 2 == 0) then do
+						let temp = palavra ++ [['a'..'z']!!indice]
+						embaralha_letras(temp:ms)
+					else do
+						let temp = [['a'..'z']!!indice] ++ palavra
+						embaralha_letras(temp:ms)
