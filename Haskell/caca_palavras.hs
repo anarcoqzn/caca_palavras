@@ -1,10 +1,7 @@
 
 -- Teste
 main = do 
-	print(acharLetra caca_palavra 1 1)
-	print(acharLetra caca_palavra 2 1)
-	print(acharLetra caca_palavra 3 1)
-	print(acharLetra caca_palavra 4 1)
+	encontraPalavra  ""
 	
 -- Criado para exemplificar 
 caca_palavra = ["cra","asd","sjy","ali","asc","nbg","ert","mhj","fdf","asd"]
@@ -42,3 +39,13 @@ acharColuna :: [Char] -> Int -> Int -> [Char]
 acharColuna (b:bs) coluna acumC
 	|(acumC < coluna) = (acharColuna bs coluna (acumC+1))
 	|otherwise = [b]
+
+	
+-- Encontra a palavra a partir das linhas e colunas 
+encontraPalavra :: String -> IO()
+encontraPalavra palavra = do
+	print("Digite a linha e a coluna; se desejar parar digite 0")
+	x <- getLine
+	if x == "0" then  print(palavra)
+	else
+		encontraPalavra (palavra ++ (acharLetra caca_palavra (linha(split x ' ')) (coluna(split x ' '))) )
