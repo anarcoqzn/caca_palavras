@@ -1,45 +1,44 @@
-import System.Random (randomRIO)
 
+-- Teste
 main = do 
-        putStrLn " "
-        putStrLn "*********************JOGO DE CAÇA PALAVRAS*********************"
-        putStrLn " "
-        putStrLn "Intruções: "
-        putStrLn "   1 - Você irá digitar o número de palavras que devem ser escondidas no caça palavras."
-        putStrLn "   2 - Você deverá digitar as palavras que serão escondidas uma por vez."
-        putStrLn "   3 - Para procurar as palavras você irá precisar informar as linhas e as colunas das palavras que será formada."
-        putStrLn "   4 - O jogo será finalizado quando todas as palavras forem encontradas."
-        putStrLn " "
-        putStrLn "Digite a quantidade de palavras que serão escondidas:"
-        x <- getLine
-        let qnt_palavras = read x :: Int
-        valida_n(qnt_palavras)
-        
-        --input <- getLine
-    	--let palavras = (words input)
-	    --imprimeMatriz(caca_palavra)
-        --x <- randomRIO (0,9::Int)
-        --y <- randomRIO (0,9::Int)
-        --putStrLn (show x ++ " e " ++ show y)
-        
-caca_palavra = ["","","","","","","","","",""]
+	print(acharLetra caca_palavra 1 1)
+	print(acharLetra caca_palavra 2 1)
+	print(acharLetra caca_palavra 3 1)
+	print(acharLetra caca_palavra 4 1)
+	
+-- Criado para exemplificar 
+caca_palavra = ["cra","asd","sjy","ali","asc","nbg","ert","mhj","fdf","asd"]
 
-valida_n :: Int -> IO()
-valida_n n
-    | n < 4 = do
-              putStrLn "A quantidade de palavras deve ser maior ou igual a 4, tente outra quantidade."   
-              x <- getLine
-              let qnt_palavras = read x :: Int
-              valida_n(qnt_palavras) 
-    | n > 25 = do
-               putStrLn "A quantidade de palavras deve ser menor ou igual a 25, tente outra quantidade."
-               x <- getLine
-               let qnt_palavras = read x :: Int
-               valida_n(qnt_palavras)
-    | otherwise = putStrLn ""
 
---imprimeMatriz :: [String] -> IO()
---imprimeMatriz [] = putStrLn""
---imprimeMatriz (m:ms) = do
-	--putStrLn m
-	--imprimeMatriz(ms)
+-- Procurar palavras no caca_palavra
+
+-- Split
+split :: String -> Char -> [String]
+split [] delim = [""]
+split (c:cs) delim
+   | c == delim = "" : rest
+   | otherwise = (c : head rest) : tail rest
+   where rest = split cs delim
+
+-- Transforma em Int a linha e a coluna recebidas como string
+linha :: [String] -> Int
+linha (b:bs) = read b :: Int
+
+coluna :: [String] -> Int
+coluna (b:bs) = read (head bs) :: Int
+
+
+-- Acha a letra a partir da linha e coluna
+acharLetra :: [String] -> Int -> Int -> [Char]
+acharLetra lista linha coluna = acharLinha lista linha coluna 1 1
+
+acharLinha :: [String] -> Int -> Int -> Int -> Int -> [Char]
+acharLinha (r:rs) linha coluna acumL acumC
+	|(acumL < linha) = (acharLinha rs linha coluna (acumL+1) acumC)
+	|(acumL == linha && acumC < coluna) = acharColuna r coluna acumC
+	|(acumL == linha && acumC == coluna) = [head r]
+
+acharColuna :: [Char] -> Int -> Int -> [Char]
+acharColuna (b:bs) coluna acumC
+	|(acumC < coluna) = (acharColuna bs coluna (acumC+1))
+	|otherwise = [b]
