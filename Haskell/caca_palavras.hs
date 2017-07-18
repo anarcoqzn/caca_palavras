@@ -1,4 +1,4 @@
---import System.Random(randomRIO)
+import System.Random(randomRIO)
 
 main = do 
         putStrLn " "
@@ -37,21 +37,39 @@ valida_n n
                valida_n(qnt_palavras)
     | otherwise = putStrLn ""
 
+embaralha_letras :: (Int, [String]) -> [String]
+embaralha_letras (n,[]) = []
+embaralha_letras (n,p:ps) 
+  | tam < 10 =
+    do
+      let x = (randomRs (1, 50) (mkStdGen (n)))!!tam :: Int
+      let l = (randomRs ('a', 'z') (mkStdGen (n)))!!tam :: Char
+      if(x `mod` 2 == 0) then
+        embaralha_letras(n*x, (p++[l]):ps)
+      else
+        embaralha_letras(n*x, ([l]++p):ps)
+      
+  | otherwise = [p]++embaralha_letras(n-tam,ps)
+    where tam = length(p)
+
+
 imprimeMatriz :: [String] -> IO()
 imprimeMatriz [] = putStrLn""
 imprimeMatriz (m:ms) = do
-	putStrLn m
-	imprimeMatriz(ms)
-	
-embaralha_letras :: [String] -> [String]
-embaralha_letras [] = []
-embaralha_letras (palavra:ms) 
-	| length(palavra) == 10 = [palavra] ++ embaralha_letras(ms)
-	| otherwise = do
-					let indice = 13 -- randomico
-					if(indice `mod` 2 == 0) then do
-						let temp = palavra ++ [['a'..'z']!!indice]
-						embaralha_letras(temp:ms)
-					else do
-						let temp = [['a'..'z']!!indice] ++ palavra
-						embaralha_letras(temp:ms)
+  putStrLn m
+  imprimeMatriz(ms)
+
+vertical :: ([String], String, Int, Int, Int) -> [String]
+vertical (m:ms, "", i, j, cont) = m:ms
+vertical (m:ms, p:ps, i, j, cont)
+  | cont == i =
+    if(tam == j) then
+      [m++[p]] ++ vertical(ms, ps, i, j, cont)
+    else
+      if(m == "" || length(tail(m)) == 0) then
+        vertical((m++"1"):ms, p:ps, i, j, cont)
+      else
+        vertical(tail(m):ms, p:ps, i, j, cont)
+
+  | otherwise = vertical(ms, p:ps, i, j, cont+1)
+  where tam = length(m)
