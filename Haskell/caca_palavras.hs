@@ -59,25 +59,18 @@ main = do
     
     -- encontrar palavras    
     putStrLn "Agora que as palavras foram escondidas, você deve procurá-las"
-    putStrLn "digitando a palavra que você quer encontrar e os valores das"
-    putStrLn "linhas e colunas correspondentes à cada letra da palavra."    
-    palavraEncontrar1 <- getLine
-    encontraPalavra(palavraEncontrar1, t6)
-    
-    putStrLn "Digite a segunda palavra que será encontrada:" 
-    palavraEncontrar2 <- getLine
-    encontraPalavra(palavraEncontrar2, t6)    
+    putStrLn "digitando os valores das linhas e colunas correspondentes à cada letra da palavra." 
+    putStrLn " "
+    encontraPalavra(palavras4, "", t6, 0)
 
-    putStrLn "Digite a terceira palavra que será encontrada:" 
-    palavraEncontrar3 <- getLine
-    encontraPalavra(palavraEncontrar3, t6)
     
-    putStrLn "Digite a quarta palavra que será encontrada:" 
-    palavraEncontrar4 <- getLine
-    encontraPalavra(palavraEncontrar4, t6)
+palavraNaMatriz :: (String, [String]) -> IO()
+palavraNaMatriz(palavra, lista)
+    | elem palavra lista = putStr " "
+    | otherwise = error "Essa palavra não foi escondida no caça palavras!"
 
-verificaInteiro :: [Char] -> IO()
-verificaInteiro [] = putStrLn ""
+verificaInteiro :: String -> IO()
+verificaInteiro [] = putStr ""
 verificaInteiro (c:cs) 
     | (c == '0') = error "ERRO: palavra possui inteiro."
     | (c == '1') = error "ERRO: palavra possui inteiro."
@@ -95,12 +88,12 @@ verificaTamanho :: [Char] -> IO()
 verificaTamanho palavra
     | length palavra < 2 = error "ERRO: palavra possui menos de 2 letras."
     | length palavra > 10 = error "ERRO: palavra possui mais de 10 letras."
-    | otherwise = putStrLn ""
+    | otherwise = putStr ""
 
 verificaRepetida :: (String, [String]) -> IO()
 verificaRepetida(palavra, lista)
     | elem palavra lista = error "ERRO: palavra repetida."
-    | otherwise = putStrLn ""
+    | otherwise = putStr ""
 
 embaralha_letras :: (Int, [String]) -> [String]
 embaralha_letras (n,[]) = []
@@ -140,7 +133,7 @@ vertical (m:ms, p:ps, i, j, contLinha)
       [m++[p]] ++ vertical(ms, ps, i+1, j, contLinha+1)
     else
       if(contColuna < j) then
-        vertical((m++"1"):ms, p:ps, i, j, contLinha) -- concateno com 1 aqui pra ter controle sobre o contColuna. Depois esses 1 sao trocados por letras
+        vertical((m++"1"):ms, p:ps, i, j, contLinha)
       else do 
         let inicio = take j m
         let fim = take (contColuna - j) $ drop (j+1) m 
@@ -185,7 +178,7 @@ horizontal (m:ms, p, i, j, contLinha)
 
   | otherwise = [m] ++ horizontal(ms, p, i, j, contLinha+1)
   where tam = length(head(ms));contColuna = length(m)
-
+  
 inverte :: String -> String
 inverte "" = ""
 inverte (p:ps) = inverte(ps) ++ [p]
@@ -221,10 +214,30 @@ acharColuna (b:bs) coluna acumC
     |otherwise = [b]
     
 -- Encontra a palavra a partir das linhas e colunas 
-encontraPalavra :: (String, [String]) -> IO()
-encontraPalavra(palavra, caca_palavra) = do
+encontraPalavra :: ([String], String, [String], Int) -> IO()
+encontraPalavra(_,_,_,4) = putStrLn "Voce achou todas as palavras!!"
+encontraPalavra(lista, palavra, caca_palavra, n) = do
     print("Digite a linha e a coluna; se desejar parar digite 0")
-    x <- getLine
-    if x == "0" then  print(palavra)
-    else
-        encontraPalavra (palavra ++ (acharLetra caca_palavra (linha(split x ' ')) (coluna(split x ' '))), caca_palavra ) 
+    input <- getLine
+    let indices = (map read $ words input :: [Int])
+    if (length(indices) == 1) then
+        if contemPalavra(lista,palavra) then do 
+			putStrLn("Parabens, voce encontrou a palavra!")
+			imprimeMatriz(caca_palavra)
+			encontraPalavra(lista, "", caca_palavra, n+1)
+        else do
+			putStrLn("Voce nao conseguiu achar a palavra certa!")
+			imprimeMatriz(caca_palavra)
+			encontraPalavra(lista, "", caca_palavra, n)
+    else do
+		let i = indices!!0 - 1
+		let j = indices!!1 - 1
+		let temp = [(caca_palavra!!i)!!j]
+		encontraPalavra(lista, palavra ++ temp, caca_palavra, n) 
+
+        
+contemPalavra :: ([String], String) -> Bool
+contemPalavra([],_) = False
+contemPalavra(l:ls, palavra)
+	| l == palavra = True
+	| otherwise = contemPalavra(ls, palavra)
