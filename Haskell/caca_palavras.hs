@@ -1,6 +1,8 @@
 import System.Random hiding (split)
 
+-- Teste
 main = do 
+-- Procurar palavras no caca_palavra
     -- Informacoes
     putStrLn " "
     putStrLn "*********************JOGO DE CAÇA PALAVRAS*********************"
