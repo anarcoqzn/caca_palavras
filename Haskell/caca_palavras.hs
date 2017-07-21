@@ -1,45 +1,206 @@
-import System.Random (randomRIO)
+import System.Random hiding (split)
 
 main = do 
-        putStrLn " "
-        putStrLn "*********************JOGO DE CAÇA PALAVRAS*********************"
-        putStrLn " "
-        putStrLn "Intruções: "
-        putStrLn "   1 - Você irá digitar o número de palavras que devem ser escondidas no caça palavras."
-        putStrLn "   2 - Você deverá digitar as palavras que serão escondidas uma por vez."
-        putStrLn "   3 - Para procurar as palavras você irá precisar informar as linhas e as colunas das palavras que será formada."
-        putStrLn "   4 - O jogo será finalizado quando todas as palavras forem encontradas."
-        putStrLn " "
-        putStrLn "Digite a quantidade de palavras que serão escondidas:"
-        x <- getLine
-        let qnt_palavras = read x :: Int
-        valida_n(qnt_palavras)
+    -- Informacoes
+    putStrLn " "
+    putStrLn "*********************JOGO DE CAÇA PALAVRAS*********************"
+    putStrLn " "
+    putStrLn "Intruções: "
+    putStrLn "   1 - Você irá digitar as 4 palavras que serão escondidas."
+    putStrLn "   2 - Você deverá digitar as palavras que serão escondidas uma por vez."
+    putStrLn "        - As palavras não devem possuir inteiros."
+    putStrLn "        - As palavras devem possuir entre 2 e 10 letras."
+    putStrLn "        - Não deve possuir palavras repetidas."
+    putStrLn "   3 - Para procurar as palavras você irá precisar informar as linhas e as colunas das palavras que será formada."
+    putStrLn "   4 - O jogo será finalizado quando todas as palavras forem encontradas."
+    putStrLn " "
+    putStrLn "Digite as palavras seguidas de um enter: "
+    x1 <- randomRIO (0,9999::Int)
+    
+    -- recebe, valida e encaixa palavras
+    palavra1 <- getLine
+    verificaInteiro(palavra1)
+    verificaTamanho(palavra1)
+    let t1 = vertical(["","","","","","","","","",""], palavra1, 0,1,0)
+    let palavras1 = [palavra1] 
         
-        --input <- getLine
-    	--let palavras = (words input)
-	    --imprimeMatriz(caca_palavra)
-        --x <- randomRIO (0,9::Int)
-        --y <- randomRIO (0,9::Int)
-        --putStrLn (show x ++ " e " ++ show y)
+    palavra2 <- getLine
+    verificaInteiro(palavra2)
+    verificaTamanho(palavra2)
+    verificaRepetida(palavra2, palavras1)
+    let t2 = horizontal(t1, palavra2, 0,2,0)    
+    let palavras2 = [palavra1, palavra2] 
         
-caca_palavra = ["","","","","","","","","",""]
+    palavra3 <- getLine
+    verificaInteiro(palavra3)
+    verificaTamanho(palavra3)
+    verificaRepetida(palavra3, palavras2)
+    let t3 = vertical(t2, palavra3, 2, 6, 0)    
+    let palavras3 = [palavra1, palavra2, palavra3] 
+        
+    palavra4 <- getLine
+    verificaInteiro(palavra4)
+    verificaTamanho(palavra4)
+    verificaRepetida(palavra4, palavras3)
+    let t4 = horizontal(t3, palavra4, 3, 4, 0)
+    let palavras4 = [palavra1, palavra2, palavra3, palavra4]
+    
+    let t5 = substitui_uns_por_letra(x1, t4)
+    let t6 = embaralha_letras(x1+1,t5)
+    
+    -- imprime caca palavras
+    putStrLn "As palavras foram escondidas no caça palavras abaixo!"
+    putStrLn " "
+    imprimeMatriz(t6)
+    putStrLn " "
+    
+    -- encontrar palavras    
+    putStrLn "Agora que as palavras foram escondidas, você deve procurá-las"
+    putStrLn "digitando a palavra que você quer encontrar e os valores das"
+    putStrLn "linhas e colunas correspondentes à cada letra da palavra."    
+    palavraEncontrar1 <- getLine
+    encontraPalavra(palavraEncontrar1, t6)
+    
+    putStrLn "Digite a segunda palavra que será encontrada:" 
+    palavraEncontrar2 <- getLine
+    encontraPalavra(palavraEncontrar2, t6)    
 
-valida_n :: Int -> IO()
-valida_n n
-    | n < 4 = do
-              putStrLn "A quantidade de palavras deve ser maior ou igual a 4, tente outra quantidade."   
-              x <- getLine
-              let qnt_palavras = read x :: Int
-              valida_n(qnt_palavras) 
-    | n > 25 = do
-               putStrLn "A quantidade de palavras deve ser menor ou igual a 25, tente outra quantidade."
-               x <- getLine
-               let qnt_palavras = read x :: Int
-               valida_n(qnt_palavras)
+    putStrLn "Digite a terceira palavra que será encontrada:" 
+    palavraEncontrar3 <- getLine
+    encontraPalavra(palavraEncontrar3, t6)
+    
+    putStrLn "Digite a quarta palavra que será encontrada:" 
+    palavraEncontrar4 <- getLine
+    encontraPalavra(palavraEncontrar4, t6)
+
+verificaInteiro :: [Char] -> IO()
+verificaInteiro [] = putStrLn ""
+verificaInteiro (c:cs) 
+    | (c == '0') = error "ERRO: palavra possui inteiro."
+    | (c == '1') = error "ERRO: palavra possui inteiro."
+    | (c == '2') = error "ERRO: palavra possui inteiro."
+    | (c == '3') = error "ERRO: palavra possui inteiro."
+    | (c == '4') = error "ERRO: palavra possui inteiro."
+    | (c == '5') = error "ERRO: palavra possui inteiro."
+    | (c == '6') = error "ERRO: palavra possui inteiro."
+    | (c == '7') = error "ERRO: palavra possui inteiro."
+    | (c == '8') = error "ERRO: palavra possui inteiro."
+    | (c == '9') = error "ERRO: palavra possui inteiro."
+    | otherwise = verificaInteiro(cs)
+
+verificaTamanho :: [Char] -> IO()
+verificaTamanho palavra
+    | length palavra < 2 = error "ERRO: palavra possui menos de 2 letras."
+    | length palavra > 10 = error "ERRO: palavra possui mais de 10 letras."
     | otherwise = putStrLn ""
 
---imprimeMatriz :: [String] -> IO()
---imprimeMatriz [] = putStrLn""
---imprimeMatriz (m:ms) = do
-	--putStrLn m
-	--imprimeMatriz(ms)
+verificaRepetida :: (String, [String]) -> IO()
+verificaRepetida(palavra, lista)
+    | elem palavra lista = error "ERRO: palavra repetida."
+    | otherwise = putStrLn ""
+
+embaralha_letras :: (Int, [String]) -> [String]
+embaralha_letras (n,[]) = []
+embaralha_letras (n,p:ps) 
+  | tam < 10 =
+    do
+      let l = [(randomRs ('a', 'z') (mkStdGen (n)))!!tam :: Char]
+      embaralha_letras(n+2, (p++l):ps)
+  | otherwise = [p]++embaralha_letras(n+3,ps)
+    where tam = length(p)
+    
+substitui_uns_por_letra :: (Int, [String]) -> [String]
+substitui_uns_por_letra(_, []) = []
+substitui_uns_por_letra(n, m:ms) = troca_uns_por_letra(n, m):substitui_uns_por_letra(n+1,ms)
+
+troca_uns_por_letra :: (Int,String) -> String
+troca_uns_por_letra (_, "") = ""
+troca_uns_por_letra (n, m:ms)
+ | m == '1' = 
+  do
+    let l = [(randomRs ('a', 'z') (mkStdGen (n)))!!5 :: Char]
+    l++troca_uns_por_letra(n+1,ms)
+ | otherwise = [m] ++troca_uns_por_letra(n+2, ms)
+
+imprimeMatriz :: [String] -> IO()
+imprimeMatriz [] = putStrLn ""
+imprimeMatriz (m:ms) = do
+  putStrLn m 
+  imprimeMatriz(ms)
+  
+vertical :: ([String], String, Int, Int, Int) -> [String]
+vertical (m:ms, "", _, _, _) = m:ms
+vertical ([], _, _, _, _) = []
+vertical (m:ms, p:ps, i, j, contLinha)
+  | contLinha == i =
+    if(contColuna == j) then
+      [m++[p]] ++ vertical(ms, ps, i+1, j, contLinha+1)
+    else
+      if(contColuna < j) then
+        vertical((m++"1"):ms, p:ps, i, j, contLinha) -- concateno com 1 aqui pra ter controle sobre o contColuna. Depois esses 1 sao trocados por letras
+      else do 
+        let inicio = take j m
+        let fim = take (contColuna - j) $ drop (j+1) m 
+        [inicio ++ [p] ++ fim] ++ vertical(ms, ps, i, j, contLinha)
+
+  | otherwise = [m] ++ vertical(ms, p:ps, i, j, contLinha+1)
+  where tam = length(head(ms));contColuna = length(m)
+
+horizontal :: ([String], String, Int, Int, Int) -> [String]
+horizontal (m:ms, "", _, _, _) = m:ms
+horizontal ([], _, _, _, _) = []
+horizontal (m:ms, p, i, j, contLinha)
+  | contLinha == i =
+    if(contColuna == j) then
+      [m++p] ++ ms
+    else
+      if(contColuna < j) then
+        horizontal((m++"1"):ms, p, i, j, contLinha)
+      else do 
+        let inicio = take j m
+        let temp = inicio ++ p
+        let fim = take (contColuna - length(temp)) $ drop (length(temp)) m 
+        [temp ++ fim] ++ ms
+
+  | otherwise = [m] ++ horizontal(ms, p, i, j, contLinha+1)
+  where tam = length(head(ms));contColuna = length(m)
+
+
+-- Split
+split :: String -> Char -> [String]
+split [] delim = [""]
+split (c:cs) delim
+   | c == delim = "" : rest
+   | otherwise = (c : head rest) : tail rest
+   where rest = split cs delim
+
+-- Transforma em Int a linha e a coluna recebidas como string
+linha :: [String] -> Int
+linha (b:bs) = read b :: Int
+
+coluna :: [String] -> Int
+coluna (b:bs) = read (head bs) :: Int
+
+-- Acha a letra a partir da linha e coluna
+acharLetra :: [String] -> Int -> Int -> [Char]
+acharLetra lista linha coluna = acharLinha lista linha coluna 1 1
+
+acharLinha :: [String] -> Int -> Int -> Int -> Int -> [Char]
+acharLinha (r:rs) linha coluna acumL acumC
+    |(acumL < linha) = (acharLinha rs linha coluna (acumL+1) acumC)
+    |(acumL == linha && acumC < coluna) = acharColuna r coluna acumC
+    |(acumL == linha && acumC == coluna) = [head r]
+
+acharColuna :: [Char] -> Int -> Int -> [Char]
+acharColuna (b:bs) coluna acumC
+    |(acumC < coluna) = (acharColuna bs coluna (acumC+1))
+    |otherwise = [b]
+    
+-- Encontra a palavra a partir das linhas e colunas 
+encontraPalavra :: (String, [String]) -> IO()
+encontraPalavra(palavra, caca_palavra) = do
+    print("Digite a linha e a coluna; se desejar parar digite 0")
+    x <- getLine
+    if x == "0" then  print(palavra)
+    else
+        encontraPalavra (palavra ++ (acharLetra caca_palavra (linha(split x ' ')) (coluna(split x ' '))), caca_palavra ) 
