@@ -1,8 +1,6 @@
 import System.Random hiding (split)
 
--- Teste
 main = do 
--- Procurar palavras no caca_palavra
     -- Informacoes
     putStrLn " "
     putStrLn "*********************JOGO DE CAÇA PALAVRAS*********************"
@@ -121,9 +119,13 @@ troca_uns_por_letra (n, m:ms)
 imprimeMatriz :: [String] -> IO()
 imprimeMatriz [] = putStrLn ""
 imprimeMatriz (m:ms) = do
-  putStrLn m 
+  putStrLn("                 " ++ separaLetras(m))
   imprimeMatriz(ms)
   
+separaLetras :: String -> String
+separaLetras "" = ""
+separaLetras(p:ps) = [p] ++ " " ++ separaLetras(ps)
+	
 vertical :: ([String], String, Int, Int, Int) -> [String]
 vertical (m:ms, "", _, _, _) = m:ms
 vertical ([], _, _, _, _) = []
@@ -131,9 +133,8 @@ vertical (m:ms, p:ps, i, j, contLinha)
   | contLinha == i =
     if(contColuna == j) then
       [m++[p]] ++ vertical(ms, ps, i+1, j, contLinha+1)
-    else
-      if(contColuna < j) then
-        vertical((m++"1"):ms, p:ps, i, j, contLinha)
+    else if(contColuna < j) then
+      vertical((m++"1"):ms, p:ps, i, j, contLinha)
       else do 
         let inicio = take j m
         let fim = take (contColuna - j) $ drop (j+1) m 
@@ -220,13 +221,14 @@ encontraPalavra(lista, palavra, caca_palavra, n) = do
     print("Digite a linha e a coluna; se desejar parar digite 0")
     input <- getLine
     let indices = (map read $ words input :: [Int])
-    if (length(indices) == 1) then
+    if (length(indices) <= 1) then
         if contemPalavra(lista,palavra) then do 
-			putStrLn("Parabens, voce encontrou a palavra!")
+			putStrLn ""
+			putStrLn("Parabens, voce encontrou a palavra: " ++ palavra)
 			imprimeMatriz(caca_palavra)
 			encontraPalavra(lista, "", caca_palavra, n+1)
         else do
-			putStrLn("Voce nao conseguiu achar a palavra certa!")
+			putStrLn("Voce nao conseguiu achar nenhuma palavra, tente novamente!")
 			imprimeMatriz(caca_palavra)
 			encontraPalavra(lista, "", caca_palavra, n)
     else do
