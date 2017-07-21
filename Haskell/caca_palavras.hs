@@ -130,7 +130,7 @@ vertical (m:ms, p:ps, i, j, contLinha)
       [m++[p]] ++ vertical(ms, ps, i+1, j, contLinha+1)
     else
       if(contColuna < j) then
-        vertical((m++"1"):ms, p:ps, i, j, contLinha) -- concateno com 1 aqui pra ter controle sobre o contColuna. Depois esses 1 sao trocados por letras
+        vertical((m++"1"):ms, p:ps, i, j, contLinha)
       else do 
         let inicio = take j m
         let fim = take (contColuna - j) $ drop (j+1) m 
@@ -158,6 +158,23 @@ horizontal (m:ms, p, i, j, contLinha)
   | otherwise = [m] ++ horizontal(ms, p, i, j, contLinha+1)
   where tam = length(head(ms));contColuna = length(m)
 
+diagonal :: ([String], String, Int, Int, Int) -> [String]
+diagonal (m:ms, "", _, _, _) = m:ms
+diagonal ([], _, _, _, _) = []
+diagonal (m:ms, p:ps, i, j, contLinha)
+  | contLinha == i =
+    if(contColuna == j) then
+      [m++[p]] ++ diagonal(ms, ps, i+1, j+1, contLinha+1)
+    else
+      if(contColuna < j) then
+        diagonal((m++"1"):ms, p:ps, i, j, contLinha)
+      else do 
+        let inicio = take j m
+        let fim = take (contColuna - j) $ drop (j+1) m 
+        [inicio ++ [p] ++ fim] ++ diagonal(ms, ps, i, j, contLinha)
+
+  | otherwise = [m] ++ diagonal(ms, p:ps, i, j, contLinha+1)
+  where tam = length(head(ms));contColuna = length(m)
 
 -- Split
 split :: String -> Char -> [String]
@@ -199,9 +216,11 @@ encontraPalavra(lista, palavra, caca_palavra, n) = do
     if (length(indices) == 1) then
         if contemPalavra(lista,palavra) then do 
 			putStrLn("Parabens, voce encontrou a palavra!")
+			imprimeMatriz(caca_palavra)
 			encontraPalavra(lista, "", caca_palavra, n+1)
         else do
 			putStrLn("Voce nao conseguiu achar a palavra certa!")
+			imprimeMatriz(caca_palavra)
 			encontraPalavra(lista, "", caca_palavra, n)
     else do
 		let i = indices!!0 - 1
