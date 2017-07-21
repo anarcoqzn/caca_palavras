@@ -42,7 +42,7 @@ main = do
     verificaInteiro(palavra4)
     verificaTamanho(palavra4)
     verificaRepetida(palavra4, palavras3)
-    let t4 = horizontal(t3, palavra4, 3, 4, 0)
+    let t4 = horizontal(t3, palavra4, 8, 2, 0)
     let palavras4 = [palavra1, palavra2, palavra3, palavra4]
     
     let t5 = substitui_uns_por_letra(x1, t4)
@@ -175,6 +175,10 @@ diagonal (m:ms, p:ps, i, j, contLinha)
 
   | otherwise = [m] ++ diagonal(ms, p:ps, i, j, contLinha+1)
   where tam = length(head(ms));contColuna = length(m)
+
+inverte :: String -> String
+inverte "" = ""
+inverte (p:ps) = inverte(ps) ++ [p]
 
 -- Split
 split :: String -> Char -> [String]
